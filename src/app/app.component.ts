@@ -12,6 +12,7 @@ export class AppComponent implements OnInit {
   
   public employees: Employee[];
   public editEmployee: Employee;
+  public deleteEmployee: Employee;
 
   constructor(private employeeService: EmployeeService) {}
 
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit {
         this.editEmployee = employee;
         button.setAttribute('data-target', '#updateEmployeeModal');
     } else if (mode === 'delete') {
+      this.deleteEmployee = employee;
         button.setAttribute('data-target', '#deleteEmployeeModal');
     }
     container?.appendChild(button);
@@ -53,9 +55,11 @@ export class AppComponent implements OnInit {
     this.employeeService.addEmployee(addForm.value).subscribe(
       (response: Employee) => {
         this.getEmployees();
+        addForm.reset();
       },
       (error: HttpErrorResponse) => {
         alert(error.message);
+        addForm.reset();
       }
     )
   }
@@ -69,6 +73,17 @@ export class AppComponent implements OnInit {
         alert(error.message);
       }
     )
+  }
+
+  public onDeleteEmployee(employeeId: number): void {
+      this.employeeService.deleteEmployee(employeeId).subscribe(
+        (response: void) => {
+          this.getEmployees();
+        },
+        (error: HttpErrorResponse) => {
+          alert(error.message);
+        }
+      )
   }
 
 }
