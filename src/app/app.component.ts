@@ -9,17 +9,17 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  
+
   public employees: Employee[];
   public editEmployee: Employee;
   public deleteEmployee: Employee;
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(private employeeService: EmployeeService) { }
 
   ngOnInit(): void {
     this.getEmployees();
   }
-  
+
   public getEmployees(): void {
     this.employeeService.getEmployees().subscribe(
       (response: Employee[]) => {
@@ -40,11 +40,11 @@ export class AppComponent implements OnInit {
     if (mode === 'add') {
       button.setAttribute('data-target', '#addEmployeeModal');
     } else if (mode === 'edit') {
-        this.editEmployee = employee;
-        button.setAttribute('data-target', '#updateEmployeeModal');
+      this.editEmployee = employee;
+      button.setAttribute('data-target', '#updateEmployeeModal');
     } else if (mode === 'delete') {
       this.deleteEmployee = employee;
-        button.setAttribute('data-target', '#deleteEmployeeModal');
+      button.setAttribute('data-target', '#deleteEmployeeModal');
     }
     container?.appendChild(button);
     button.click();
@@ -76,14 +76,30 @@ export class AppComponent implements OnInit {
   }
 
   public onDeleteEmployee(employeeId: number): void {
-      this.employeeService.deleteEmployee(employeeId).subscribe(
-        (response: void) => {
-          this.getEmployees();
-        },
-        (error: HttpErrorResponse) => {
-          alert(error.message);
-        }
-      )
+    this.employeeService.deleteEmployee(employeeId).subscribe(
+      (response: void) => {
+        this.getEmployees();
+      },
+      (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    )
+  }
+
+  public searchEmployees(key: String): void {
+    const results: Employee[] = [];
+    for (const employee of this.employees) {
+      if (employee.name.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+      || employee.email.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+      || employee.phone.toLowerCase().indexOf(key.toLowerCase()) !== -1 
+      || employee.jobTitle.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
+        results.push(employee);
+      }
+    }
+    this.employees = results;
+    if (results.length === 0) {
+      this.getEmployees();
+    }
   }
 
 }
